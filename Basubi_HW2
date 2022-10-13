@@ -1,0 +1,37 @@
+#!/usr/bin/bash -l
+
+#download data
+#curl -o calfires_2021.csv
+
+# print out all years
+awk -F, '{print $2}' calfires_2021.csv
+
+# sorted all the years, removed YEAR header
+awk -F, '{print $2}' calfires_2021.csv | sort -n | tail -n +2
+
+# to test the following, made a new script called year.sh
+MINYEAR=2017
+MAXYEAR=2021
+echo "This report has the years: $MINYEAR-$MAXYEAR"
+# run bash year.sh to test the variables work
+
+# Print out the number of fires in the database
+awk -F, '{print $2}' calfires_2021.csv | sort -n | tail -n +2 | wc -l
+FIRENUMBER=134
+echo "this database has $FIRENUMBER fires"
+
+#Print out the number of fires that occur each year
+cut -d, -f2 calfires_2021.csv | sort -n | uniq -c | tail -n+2
+
+#Print out the name and year of largest fire
+ awk -F, '{print $13, $6}' calfires_2021.csv | sort -nr | head -5
+
+#Print out the total acreage burned
+ cut -d, -f2,13 calfires_2021.csv | awk -F',' '{sum+=$2;} END{print sum;}'
+
+#Print out the total acreage burned in each year
+for YEAR in 2017 2018 2019 2020 2021
+  do
+  TOTAL=$(grep $YEAR calfires_2021.csv | awk -F',' '{sum+=$13;} END{print sum;}')
+  echo "In Year $YEAR, Total acreage burned was $TOTAL"
+done
